@@ -76,11 +76,6 @@ def launch_game():
         mcgyver = Character(mcgy_maze)
         guardian = NPC(mcgy_maze, "GUARDIAN_CHAR")
 
-        # creating collectables inst.
-        ether = CollectableItems("E", mcgy_maze)
-        needle = CollectableItems("N", mcgy_maze)
-        tube = CollectableItems("T", mcgy_maze)
-
         # ===========================
         #       In game actions
         # ===========================
@@ -114,20 +109,6 @@ def launch_game():
 
             mcgy_maze.display_lvl(window)
             guardian.display(window)
-
-            # # workaround... work in progress.
-            # Can't get the item to disappear,
-            # when collected.
-            ether.display(window)
-            if mcgyver.position(mcgy_maze) == ether.position(mcgy_maze):
-                ether.displaying = False
-            needle.display(window)
-            if mcgyver.position(mcgy_maze) == needle.position(mcgy_maze):
-                needle.displaying = False
-            tube.display(window)
-            if mcgyver.position(mcgy_maze) == tube.position(mcgy_maze):
-                tube.displaying = False
-
             mcgyver.display(window)
 
             # display the inventory when tab key is pressed

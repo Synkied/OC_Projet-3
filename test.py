@@ -1,11 +1,31 @@
-# ITEMS_SPRITES = {
-#     "E": ("Ether", "resources/img/ether.png"),
-#     "N": ("Needle", "resources/img/needle.png"),
-#     "T": ("Tube", "resources/img/tube.png"),
-# }
+ITEMS_SPRITES = {
+    1: ("Ether", "resources/img/ether.png"),
+    2: ("Needle", "resources/img/needle.png"),
+    3: ("Tube", "resources/img/tube.png"),
+}
 
-# for k in ITEMS_SPRITES.keys():
-#     print(ITEMS_SPRITES[k])
+
+# for i in range(3):
+#     for j in range(2):
+#         t = 1+1
+
+n = str([key for key in ITEMS_SPRITES.keys()])
+
+item_key = [key for key in ITEMS_SPRITES.keys()]
+
+items = {}
+
+for key in ITEMS_SPRITES:
+    items[key] = ITEMS_SPRITES[key][1]
+print(items)
+print(ITEMS_SPRITES)
+
+
+# while n < 3:
+#     for k in ITEMS_SPRITES.keys():
+#         print(k)
+#     n += 1
+
 
 # ITEMS_SPRITES["test"] = 1
 
@@ -47,8 +67,3 @@
 #     for j in i:
         
 # print(x, y)
-
-
-from classes import MazeMaker
-
-maze = MazeMaker("test.txt")

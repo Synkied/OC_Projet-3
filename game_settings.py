@@ -16,9 +16,9 @@ WALL_IMG = "resources/img/wall_tile.png"
 FLOOR_IMG = "resources/img/floor_tile.png"
 
 ITEMS_SPRITES = {
-    "E": ("Ether", "resources/img/ether.png"),
-    "N": ("Needle", "resources/img/needle.png"),
-    "T": ("Tube", "resources/img/tube.png"),
+    "Ether": "resources/img/ether.png",
+    "Needle": "resources/img/needle.png",
+    "Tube": "resources/img/tube.png",
 }
 
 
@@ -35,4 +35,5 @@ NPCS_DIC = {
 """ Maps constants """
 MAP = "map1.txt"
 WALLS_MAP_NAME = "m"
-FLOOR_MAP_NAME = "0"
+FLOOR_MAP_NAME = "f"
+ITEM_MAP_NAME = "i"
