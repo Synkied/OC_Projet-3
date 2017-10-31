@@ -14,7 +14,7 @@ classes.py
 import pygame
 from pygame.locals import *
 from game_settings import *
-from classes import *
+from core import *
 
 # ===========================
 #      Initialize pygame
@@ -115,27 +115,10 @@ def launch_game():
             if key_pressed[K_TAB]:
                 mcgyver._show_inventory(window)
 
-            if mcgyver.position(mcgy_maze) == guardian.position(mcgy_maze) \
-               and len(mcgyver.inventory._items) == len(ITEMS_SPRITES):
-
-                # prints to the screen "YOU WIN"
-                win_txt = myfont.render("YOU WIN!", 1, (0, 255, 0))
-                window.blit(win_txt, (80, 175))
-                pygame.display.flip()
-                pygame.time.delay(1500)
-                in_game = False
-                in_menu = True
-
-            if mcgyver.position(mcgy_maze) == guardian.position(mcgy_maze) \
-               and len(mcgyver.inventory._items) < len(ITEMS_SPRITES):
-
-                # prints to the screen "YOU LOSE"
-                lose_txt = myfont.render("YOU LOSE!", 1, (255, 0, 0))
-                window.blit(lose_txt, (80, 175))
-                pygame.display.flip()
-                pygame.time.delay(1500)
-                in_game = False
-                in_menu = True
+            # If mcgyver position is equal to the guardian position,
+            # change in_game and in_menu bools and display a message
+            if mcgyver.position(mcgy_maze) == guardian.position(mcgy_maze):
+                in_game, in_menu = mcgyver.check_inventory(guardian, window)
 
             # refreshing the window
             pygame.display.flip()

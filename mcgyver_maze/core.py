@@ -1,4 +1,4 @@
-from random import shuffle, randrange, randint
+from random import randint
 import pygame
 from game_settings import *
 
@@ -220,12 +220,38 @@ class Character(GameObj):
             # if the sprite that the hero is on is = to one of the keys...
             if self.lvl.maze_map[self.case_y][self.case_x] == str(key):
                 # ... and if the key's value is not in the inventory already...
-                if value not in self.inventory:
+                if key not in self.inventory:
                     # ... add the key's associated value to the inventory
                     self.inventory.add_object(key)
                     print(key, "collected")
                     # set the sprite to a floor sprite
                     self.lvl.maze_map[self.case_y][self.case_x] = FLOOR_MAP_NAME
+        # print(self.inventory._items)
+
+    def check_inventory(self, npc, window):
+        """
+        Checks the inventory of self against given NPC.
+        """
+        myfont = pygame.font.SysFont("monospace", 60)
+        if sorted(self.inventory._items) == sorted(ITEMS_SPRITES):
+
+            # prints to the screen "YOU WIN"
+            win_txt = myfont.render("YOU WIN!", 1, (0, 255, 0))
+            window.blit(win_txt, (80, 175))
+            pygame.display.flip()
+            pygame.time.delay(1500)
+            return False, True
+
+        elif sorted(self.inventory._items) != sorted(ITEMS_SPRITES):
+
+            # prints to the screen "YOU LOSE"
+            lose_txt = myfont.render("YOU LOSE!", 1, (255, 0, 0))
+            window.blit(lose_txt, (80, 175))
+            pygame.display.flip()
+            pygame.time.delay(1500)
+            return False, True
+
+        return True, True
 
 
 # ===========================
