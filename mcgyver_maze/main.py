@@ -70,11 +70,13 @@ def launch_game():
                         in_menu = False
 
         # creating and displaying the map
-        mcgy_maze = Level(MAP)
+        mcgy_maze = Level(MAP, ITEMS_SPRITES)
 
         # creating character and NPC inst.
         mcgyver = Character(mcgy_maze)
-        guardian = NPC(mcgy_maze, "GUARDIAN_CHAR")
+        guardian = NPC(mcgy_maze, "guardian")
+        images = Images()
+        print(mcgy_maze.maze_map)
 
         # ===========================
         #       In game actions
@@ -107,9 +109,7 @@ def launch_game():
                     if event.key == K_DOWN:
                         mcgyver.move("down")
 
-            mcgy_maze.display_lvl(window)
-            guardian.display(window)
-            mcgyver.display(window)
+            draw_sprites(mcgy_maze, mcgyver, guardian, images, window)
 
             # display the inventory when tab key is pressed
             if key_pressed[K_TAB]:

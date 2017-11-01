@@ -11,11 +11,13 @@ class Level:
     This is to generate and display the level's maze
     """
 
-    def __init__(self, lvl_file):
+    def __init__(self, lvl_file, items):
         self.lvl_file = lvl_file
-        self.nb_items = 0
+        self.items = {}
         self.generate()
-        self.pos_items()
+        self.random_pos()
+        for item in items:
+            self.items[item] = Item(self.random_pos())
         """
         Generates a 2D array to iterate on,
         to display the lvl in the display_lvl method.
@@ -29,62 +31,22 @@ class Level:
             """
             self.maze_map = [[sprite for sprite in line if sprite != "\n"] for line in lvl_file]
 
-    def pos_items(self):
+    def random_pos(self):
         """
         # While the lvl map's case name at instance position
         # has not been updated with ITEM_MAP_NAME,
         # search for a random position.
         # This is to avoid items superposition
         """
-        key = [key for key in ITEMS_SPRITES.keys()]
-        while self.nb_items != len(ITEMS_SPRITES):
-            # randomize position
-            x_item = randint(1, NB_SPRITES - 1)
-            y_item = randint(1, NB_SPRITES - 1)
-
-            # Checks if a map case is = to FLOOR_MAP_NAME
-            # if it is, sets the item to this case
-            # and sets the item's item_const_key as the case name
-            if self.maze_map[y_item][x_item] in FLOOR_MAP_NAME:
-                # set the case name as item_const_key
-                self.maze_map[y_item][x_item] = str(key[self.nb_items])
-                self.nb_items += 1
-
-    def display_lvl(self, window):
-        """
-        Displaying the lvl sprites, in the specified window.
-        """
-        wall_sprite = pygame.image.load(WALL_IMG).convert()
-        floor_sprite = pygame.image.load(FLOOR_IMG).convert()
-
-        ether = pygame.image.load(ITEMS_SPRITES["Ether"])
-        needle = pygame.image.load(ITEMS_SPRITES["Needle"])
-        tube = pygame.image.load(ITEMS_SPRITES["Tube"])
-
-        for line_idx, line in enumerate(self.maze_map):
-            for sprite_idx, sprite in enumerate(line):
-                # used to set sprites' coords
-                # compared to the fixed sprite size
-                x = sprite_idx * SPRITE_SIZE
-                y = line_idx * SPRITE_SIZE
-
-                # displays wall if sprite in maze_map
-                # is equal to any of the items
-                # in the WALLS_MAP_NAME constant
-                if sprite in WALLS_MAP_NAME:
-                    window.blit(wall_sprite, (x, y))
-
-                # set the floor sprite where there is no wall
-                if sprite not in WALLS_MAP_NAME:
-                    window.blit(floor_sprite, (x, y))
-
-                # blitting items
-                if sprite == "Ether":
-                    window.blit(ether, (x, y))
-                if sprite == "Needle":
-                    window.blit(needle, (x, y))
-                if sprite == "Tube":
-                    window.blit(tube, (x, y))
+        # randomize position
+        case_x = 0
+        case_y = 0
+        while self.maze_map[case_y][case_x] != FLOOR_MAP_NAME:
+            case_x = randint(0, (NB_SPRITES - 1))
+            case_y = randint(0, (NB_SPRITES - 1))
+        for item in self.items:
+            self.maze_map[case_y][case_x] = "*"
+        return (case_x, case_y)
 
 
 # ===========================
@@ -95,33 +57,26 @@ class GameObj():
     Base class for all objects (chars, items...) in the game
     """
 
-    def __init__(self, img):
-        self.img = pygame.image.load(img).convert_alpha()
+    def __init__(self):
+        # self.img = pygame.image.load(img).convert_alpha()
         self.case_x = 0
         self.case_y = 0
         self.x = 0
         self.y = 0
 
-    def display(self, window):
-        """
-        Displays the object in the given window
-        """
-        # blits object to the screen,
-        # using the instance's specified img and coords
-        window.blit(self.img, (self.x, self.y))
 
     def position(self, lvl):
         """
         Returns the position of the object
         (NPC, char, item...)
         """
-        return lvl.maze_map[self.case_y][self.case_x]
+        return (self.x, self.y)
 
     def _show_inventory(self, window):
         """
         Displays the inventory of the given char in the given window
         """
-        Inventory.display_inventory(self, window)
+        self.display_inventory(window)
 
 
 # ===========================
@@ -136,24 +91,19 @@ class NPC(GameObj):
         self.name = name
         # Sets the image of the NPC,
         # according to its name
-        super().__init__(img=NPCS_DIC[self.name][1])
-        self.random_npc_position(lvl)
+        super().__init__()
+        self.case_x, self.case_y = self.random_npc_position(lvl)
 
     def random_npc_position(self, lvl):
-        while lvl.maze_map[self.case_y][self.case_x] != NPCS_DIC[self.name][0]:
-            # randomize position not too close to playable chars
-            self.case_x = randint(NB_SPRITES - 4, NB_SPRITES - 1)
-            self.case_y = randint(NB_SPRITES - 4, NB_SPRITES - 1)
-
-            # Checks if a random map case is = to FLOOR_MAP_NAME
-            # if it is, sets the item to this case
-            # and sets the NPC initial as the case name
+        while lvl.maze_map[self.case_y][self.case_x] != NPCS[self.name][0]:
+            self.case_x = randint(10, (NB_SPRITES - 1))
+            self.case_y = randint(10, (NB_SPRITES - 1))
             if lvl.maze_map[self.case_y][self.case_x] in FLOOR_MAP_NAME:
                 self.x = self.case_x * SPRITE_SIZE
                 self.y = self.case_y * SPRITE_SIZE
                 # set the case name as NPCS' initial
-                lvl.maze_map[self.case_y][self.case_x] = NPCS_DIC[self.name][0]
-                return
+                lvl.maze_map[self.case_y][self.case_x] = NPCS[self.name][0]
+        return (self.x, self.y)
 
 
 # ===========================
@@ -167,7 +117,7 @@ class Character(GameObj):
     def __init__(self, lvl):
         self.lvl = lvl
         self.inventory = Inventory()
-        super().__init__(img=HERO_CHAR)
+        super().__init__()
 
     def move(self, direction):
         """
@@ -214,18 +164,15 @@ class Character(GameObj):
     def collect_item(self):
         """
         Collects the items from the map.
-        Collectable items are set in the ITEMS_SPRITES constant
+        Collectable items are set in the SPRITES constant
         """
-        for key, value in ITEMS_SPRITES.items():
-            # if the sprite that the hero is on is = to one of the keys...
-            if self.lvl.maze_map[self.case_y][self.case_x] == str(key):
-                # ... and if the key's value is not in the inventory already...
-                if key not in self.inventory:
-                    # ... add the key's associated value to the inventory
-                    self.inventory.add_object(key)
-                    print(key, "collected")
-                    # set the sprite to a floor sprite
-                    self.lvl.maze_map[self.case_y][self.case_x] = FLOOR_MAP_NAME
+        for item in self.lvl.items:
+            if (self.lvl.items[item].case_x == self.case_x and
+                    self.lvl.items[item].case_y == self.case_y and
+                    self.lvl.items[item].show):
+                self.inventory.add_object(item)
+                self.lvl.items[item].show = False
+                print(item, "collected")
         # print(self.inventory._items)
 
     def check_inventory(self, npc, window):
@@ -253,6 +200,26 @@ class Character(GameObj):
 
         return True, True
 
+    def display_inventory(self, window):
+        # creates new pygame Surface, with specified parameters
+        inv = pygame.Surface((INV_WIDTH, INV_HEIGHT))
+        # transparent surface
+        inv.set_alpha(200)
+        # black surface
+        inv.fill((0, 0, 0))
+
+        window.blit(inv, ((0.5 * WINDOW_SIDE) - (0.5 * INV_WIDTH), (0.5 * WINDOW_SIDE) - (0.5 * INV_HEIGHT)))
+        for item in self.inventory._items:
+            if item == "Ether":
+                ether = pygame.image.load(ITEMS_SPRITES["Ether"])
+                window.blit(ether, (6 * SPRITE_SIZE, 7 * SPRITE_SIZE))
+            if item == "Needle":
+                needle = pygame.image.load(ITEMS_SPRITES["Needle"])
+                window.blit(needle, (7 * SPRITE_SIZE, 7 * SPRITE_SIZE))
+            if item == "Tube":
+                tube = pygame.image.load(ITEMS_SPRITES["Tube"])
+                window.blit(tube, (8 * SPRITE_SIZE, 7 * SPRITE_SIZE))
+
 
 # ===========================
 #      Inventory's class
@@ -275,22 +242,84 @@ class Inventory:
         # adds an item to the _items list
         self._items.append(item)
 
-    def display_inventory(self, window):
-        # creates new pygame Surface, with specified parameters
-        inv = pygame.Surface((INV_WIDTH, INV_HEIGHT))
-        # transparent surface
-        inv.set_alpha(200)
-        # black surface
-        inv.fill((0, 0, 0))
 
-        window.blit(inv, ((0.5 * WINDOW_SIDE) - (0.5 * INV_WIDTH), (0.5 * WINDOW_SIDE) - (0.5 * INV_HEIGHT)))
-        for item in self.inventory._items:
-            if item == "Ether":
-                ether = pygame.image.load(ITEMS_SPRITES["Ether"])
-                window.blit(ether, (6 * SPRITE_SIZE, 7 * SPRITE_SIZE))
-            if item == "Needle":
-                needle = pygame.image.load(ITEMS_SPRITES["Needle"])
-                window.blit(needle, (7 * SPRITE_SIZE, 7 * SPRITE_SIZE))
-            if item == "Tube":
-                tube = pygame.image.load(ITEMS_SPRITES["Tube"])
-                window.blit(tube, (8 * SPRITE_SIZE, 7 * SPRITE_SIZE))
+class Images:
+    """Load images from given config parameters"""
+
+    def __init__(self):
+        self.wall = self.load_image(DECORS["wall"])
+        self.floor = self.load_image(DECORS["floor"])
+        self.mcgyver = self.load_image(HEROES["mcgyver"])
+        self.guardian = self.load_image(NPCS["guardian"])
+        self.decors = {}
+        self.items = {}
+        for item in ITEMS_SPRITES:
+            try:
+                self.items[item] = self.load_image(ITEMS_SPRITES[item])
+            except KeyError:
+                print("Image missing for {}".format(decor))
+                exit()
+
+        for decor in DECORS:
+            try:
+                self.decors[decor] = self.load_image(DECORS[decor])
+            except KeyError:
+                print("Image missing for {}".format(decor))
+                exit()
+
+        for hero in DECORS:
+            try:
+                self.decors[decor] = self.load_image(DECORS[decor])
+            except KeyError:
+                print("Image missing for {}".format(decor))
+                exit()
+
+    @classmethod
+    def load_image(cls, filename):
+        """Calls pygame to load image and convert to transparent"""
+        try:
+            return pygame.image.load(filename).convert_alpha()
+        except FileNotFoundError:
+            print("Image {} could not be opened.".format(filename))
+            exit()
+
+
+class Item:
+    """Describes an item"""
+
+    def __init__(self, position):
+        self.case_x = position[0]
+        self.case_y = position[1]
+        self.show = True
+
+    @property
+    def case_position(self):
+        """Pixel position of the item, useful when bliting the image"""
+        return [self.case_x * SPRITE_SIZE, self.case_y * SPRITE_SIZE]
+
+
+def draw_sprites(lvl, mcgyver, guardian, images, window):
+
+    for line_idx, line in enumerate(lvl.maze_map):
+        for sprite_idx, sprite in enumerate(line):
+            # used to set sprites' coords
+            # compared to the fixed sprite size
+            x = sprite_idx * SPRITE_SIZE
+            y = line_idx * SPRITE_SIZE
+
+            # displays wall if sprite in maze_map
+            # is equal to any of the items
+            # in the WALLS_MAP_NAME constant
+            if sprite in WALLS_MAP_NAME:
+                window.blit(images.wall, (x, y))
+
+            # set the floor sprite where there is no wall
+            if sprite not in WALLS_MAP_NAME:
+                window.blit(images.floor, (x, y))
+
+    window.blit(images.mcgyver, mcgyver.position(lvl))
+    window.blit(images.guardian, guardian.position(lvl))
+
+    for item in lvl.items:
+        if lvl.items[item].show:
+            window.blit(images.items[item], lvl.items[item].case_position)

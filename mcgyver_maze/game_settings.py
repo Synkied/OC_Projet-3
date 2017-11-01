@@ -24,19 +24,26 @@ WALL_IMG = "../resources/img/wall_tile.png"
 FLOOR_IMG = "../resources/img/floor_tile.png"
 
 ITEMS_SPRITES = {
-    "Ether": "../resources/img/ether.png",
-    "Needle": "../resources/img/needle.png",
-    "Tube": "../resources/img/tube.png",
+    "ether": "../resources/img/ether.png",
+    "needle": "../resources/img/needle.png",
+    "tube": "../resources/img/tube.png",
+}
+
+DECORS = {
+    "wall": "../resources/img/wall_tile.png",
+    "floor": "../resources/img/floor_tile.png",
 }
 
 
 """ Playable characters constants """
-HERO_CHAR = "../resources/img/macgyver.png"
+HEROES = {
+    "mcgyver": "../resources/img/macgyver.png"
+}
 
 
 """ NPCS constants """
-NPCS_DIC = {
-    "GUARDIAN_CHAR": ("G", "../resources/img/guardian.png")
+NPCS = {
+    "guardian": "../resources/img/guardian.png"
 }
 
 
