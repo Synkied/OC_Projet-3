@@ -8,7 +8,7 @@ from game_settings import *
 # ===========================
 class Level:
     """
-    This is to generate and display the level's maze
+    This is to generate the level's maze and items positions
     """
 
     def __init__(self, lvl_file, required_items):
@@ -55,7 +55,7 @@ class Level:
 
 
 # ===========================
-#      Items' class
+#        Items' class
 # ===========================
 class Item:
     """Describes an item"""
@@ -199,7 +199,7 @@ class Character(GamePersona):
                 self.inventory.add_object(item)
                 self.lvl.items[item].show = False
                 print(item.capitalize(), "collected")
-        print(self.inventory._items)
+                print("Inventory:", self.inventory._items)
 
     def check_inventory(self, window):
         """
@@ -207,21 +207,19 @@ class Character(GamePersona):
         Display the win or lose message accordingly
         Return bools to display in_menu or in_game
         """
-        myfont = pygame.font.SysFont("monospace", 60)
+        myfont = pygame.font.Font(None, 60)
         if sorted(self.inventory._items) == sorted(ITEMS_SPRITES):
-
             # prints to the screen "YOU WIN"
             win_txt = myfont.render("YOU WIN!", 1, (0, 255, 0))
-            window.blit(win_txt, (80, 175))
+            window.blit(win_txt, (0.25 * WINDOW_SIDE, 0.45 * WINDOW_SIDE))
             pygame.display.flip()
             pygame.time.delay(1500)
             return False, True
 
         elif sorted(self.inventory._items) != sorted(ITEMS_SPRITES):
-
             # prints to the screen "YOU LOSE"
             lose_txt = myfont.render("YOU LOSE!", 1, (255, 0, 0))
-            window.blit(lose_txt, (80, 175))
+            window.blit(lose_txt, (0.25 * WINDOW_SIDE, 0.45 * WINDOW_SIDE))
             pygame.display.flip()
             pygame.time.delay(1500)
             return False, True
@@ -285,7 +283,7 @@ class Images:
     DECORS for decors
     HEROES for playable chars
     NPCS for npcs
-    and ITEMS_SPRITES for items
+    ITEMS_SPRITES for items
     """
 
     def __init__(self):
@@ -293,29 +291,25 @@ class Images:
         self.floor_img = self.load_image(DECORS["floor"])
         self.mcgyver_img = self.load_image(HEROES["mcgyver"])
         self.guardian_img = self.load_image(NPCS["guardian"][1])
-        self.decors = {}
         self.items = {}
         for item in ITEMS_SPRITES:
             try:
                 self.items[item] = self.load_image(ITEMS_SPRITES[item])
             except KeyError as kerr:
-                print("Image missing for {}. Original message: {}".format(item, kerr))
+                print("Image missing for {}. \
+                   Original message: {}".format(item, kerr))
                 exit()
 
-        for decor in DECORS:
-            try:
-                self.decors[decor] = self.load_image(DECORS[decor])
-            except KeyError as kerr:
-                print("Image missing for {}. Original message: {}".format(decor, kerr))
-                exit()
-
-    @classmethod
-    def load_image(cls, filename):
-        """Calls pygame to load image and convert to transparent"""
+    def load_image(self, filename):
+        """
+        Calls pygame to load image for the given filename
+        and convert alpha zones in transparent
+        """
         try:
             return pygame.image.load(filename).convert_alpha()
         except FileNotFoundError as fnferr:
-            print("Image {} could not be opened. Here is the original message: {}".format(filename, fnferr))
+            print("Image {} could not be opened. \
+               Here is the original message: {}".format(filename, fnferr))
             exit()
 
 
