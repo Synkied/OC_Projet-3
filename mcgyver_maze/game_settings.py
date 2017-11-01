@@ -3,9 +3,6 @@ import os
 ROOT_PATH = os.path.dirname(os.path.abspath(__file__))
 PARENT_ROOT_PATH = os.path.abspath(os.path.join(ROOT_PATH, os.pardir))
 
-print(PARENT_ROOT_PATH)
-
-
 """ Window constants"""
 SPRITE_SIZE = 30
 NB_SPRITES = 15
@@ -43,7 +40,7 @@ HEROES = {
 
 """ NPCS constants """
 NPCS = {
-    "guardian": "../resources/img/guardian.png"
+    "guardian": ("G", "../resources/img/guardian.png")
 }
 
 
@@ -51,3 +48,4 @@ NPCS = {
 MAP = "../resources/map/map1.txt"
 WALLS_MAP_NAME = "m"
 FLOOR_MAP_NAME = "f"
+ITEMS_MAP_NAME = "item"

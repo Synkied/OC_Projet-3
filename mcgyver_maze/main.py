@@ -22,8 +22,7 @@ from core import *
 # initialize pygame and fonts
 pygame.init()
 pygame.font.init()
-myfont = pygame.font.SysFont("monospace", 60)
-# problem sur mac
+myfont = pygame.font.Font(None, 60)
 
 # set window size
 window = pygame.display.set_mode((WINDOW_SIDE, WINDOW_SIDE))
@@ -64,19 +63,18 @@ def launch_game():
                 if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE:
                     continue_game, in_game, in_menu = False, False, False
 
-                # launching the game or viewing controls
+                # launching the game
                 elif event.type == KEYDOWN:
                     if event.key == K_KP_ENTER or event.key == K_RETURN:
                         in_menu = False
 
-        # creating and displaying the map
+        # instanciating the map and random items positions
         mcgy_maze = Level(MAP, ITEMS_SPRITES)
 
-        # creating character and NPC inst.
+        # creating character, NPC and images instances
         mcgyver = Character(mcgy_maze)
         guardian = NPC(mcgy_maze, "guardian")
         images = Images()
-        print(mcgy_maze.maze_map)
 
         # ===========================
         #       In game actions
@@ -87,7 +85,7 @@ def launch_game():
             # change the window's title while in game
             pygame.display.set_caption(WINDOW_TITLE_IN_GAME)
 
-            # gets currently pressed keys
+            # get currently pressed keys
             key_pressed = pygame.key.get_pressed()
 
             # listening for all type of events
@@ -113,12 +111,12 @@ def launch_game():
 
             # display the inventory when tab key is pressed
             if key_pressed[K_TAB]:
-                mcgyver._show_inventory(window)
+                mcgyver.display_inventory(images, window)
 
             # If mcgyver position is equal to the guardian position,
             # change in_game and in_menu bools and display a message
             if mcgyver.position(mcgy_maze) == guardian.position(mcgy_maze):
-                in_game, in_menu = mcgyver.check_inventory(guardian, window)
+                in_game, in_menu = mcgyver.check_inventory(window)
 
             # refreshing the window
             pygame.display.flip()
