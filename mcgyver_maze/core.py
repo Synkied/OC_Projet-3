@@ -236,9 +236,10 @@ class Character(GamePersona):
             are equal to the char case_x and case_y,
             set the item's attribute "show" to False, to hide it
             """
-            if self.lvl.items[item].case_x == self.case_x \
-               and self.lvl.items[item].case_y == self.case_y \
-               and self.lvl.items[item].show:
+            if (self.lvl.items[item].case_x == self.case_x and
+                    self.lvl.items[item].case_y == self.case_y and
+                    self.lvl.items[item].show):
+
                 self.inventory.add_object(item)
                 self.lvl.items[item].show = False
                 print(item.capitalize(), "collected")
@@ -278,21 +279,25 @@ class Character(GamePersona):
         inv.fill((0, 0, 0))
 
         # defines inventory position on the screen
+        # times 0.5 displays it in the middle of the window
         inv_x = (0.5 * WINDOW_SIDE) - (0.5 * INV_WIDTH)
         inv_y = (0.5 * WINDOW_SIDE) - (0.5 * INV_HEIGHT)
 
+        # blit items in the inventory.
+        # Inventory space is equal to INV_ROW_SPACE
         window.blit(inv, (inv_x, inv_y))
-        for item in self.lvl.items:
-            if item in self.inventory._items:
-                if item == "ether":
-                    ether = pygame.image.load(ITEMS_SPRITES["ether"])
-                    window.blit(ether, (6 * SPRITE_SIZE, 7 * SPRITE_SIZE))
-                if item == "needle":
-                    needle = pygame.image.load(ITEMS_SPRITES["needle"])
-                    window.blit(needle, (7 * SPRITE_SIZE, 7 * SPRITE_SIZE))
-                if item == "tube":
-                    tube = pygame.image.load(ITEMS_SPRITES["tube"])
-                    window.blit(tube, (8 * SPRITE_SIZE, 7 * SPRITE_SIZE))
+        for idx, item in enumerate(self.inventory._items):
+            if idx < INV_ROW_SPACE:
+                window.blit(images.items[item], (
+                    (idx + INV_ROW_SPACE * 2) * SPRITE_SIZE, 7 * SPRITE_SIZE)
+                    # x's and y's coordinates of the blit
+                )
+
+            else:
+                raise TooMuchItems("""Too many items to display.
+                Number of items should be less or equal to: {}""".format(
+                    INV_ROW_SPACE * INV_COL_SPACE)
+                )
 
 
 # ===========================
@@ -354,3 +359,15 @@ class Images:
             print("Image {} could not be opened. \
                Here is the original message: {}".format(filename, fnferr))
             exit()
+
+
+# ===========================
+#     Exceptions classes
+# ===========================
+class TooMuchItems(Exception):
+
+    def __init__(self, reason):
+        self.reason = reason
+
+    def __str__(self):
+        return self.reason
