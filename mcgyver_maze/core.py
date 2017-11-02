@@ -36,7 +36,10 @@ class Level:
             Nested list comprehension to build a 2D array,
             breaking down the specified lvl_file into rows and cols.
             """
-            self.maze_map = [[sprite for sprite in line if sprite != "\n"] for line in lvl_file]
+            self.maze_map = [
+                [sprite for sprite in line if sprite != "\n"]
+                for line in lvl_file
+            ]
 
     def random_pos(self):
         """
@@ -52,6 +55,42 @@ class Level:
             case_y = randint(1, (NB_SPRITES - 1))
         self.maze_map[case_y][case_x] = ITEMS_MAP_NAME
         return case_x, case_y
+
+    def draw_sprites(self, mcgyver, guardian, images, window):
+        """
+        This function is used to display every sprites on screen.
+        """
+        for line_idx, line in enumerate(self.maze_map):
+            for sprite_idx, sprite in enumerate(line):
+                # Used to set sprites' coords
+                # compared to the fixed SPRITE_SIZE
+                x = sprite_idx * SPRITE_SIZE
+                y = line_idx * SPRITE_SIZE
+
+                # Displays wall if sprite in maze_map
+                # is in the WALLS_MAP_NAME constant(s)
+                if sprite in WALLS_MAP_NAME:
+                    window.blit(images.wall_img, (x, y))
+
+                # set the floor sprite where there is no wall
+                if sprite not in WALLS_MAP_NAME:
+                    window.blit(images.floor_img, (x, y))
+
+        # blit guardian and mcgyver (in this order)
+        window.blit(images.guardian_img, guardian.position(self))
+        window.blit(images.mcgyver_img, mcgyver.position(self))
+
+        """
+        To put in the game loop.
+        For every item in the lvl's items,
+        display each item if its attribute "show" is True.
+        The item's image is seeked in the "images" Image class' instance.
+        The item's position is seeked in this item
+        Item class' instance @property "case_position"
+        """
+        for item in self.items:
+            if self.items[item].show:
+                window.blit(images.items[item], self.items[item].case_position)
 
 
 # ===========================
@@ -153,7 +192,8 @@ class Character(GamePersona):
             # so it's 0 to 14 (15 sprites)
             if self.case_x < (NB_SPRITES - 1):
                 # check if the case is not a wall
-                if self.lvl.maze_map[self.case_y][self.case_x + 1] not in WALLS_MAP_NAME:
+                if self.lvl.maze_map[self.case_y][self.case_x + 1] \
+                   not in WALLS_MAP_NAME:
                     # if it is not, go by one case
                     self.case_x += 1
                     # move the hero sprite on the case
@@ -162,21 +202,24 @@ class Character(GamePersona):
 
         if direction == "left":
             if self.case_x > 0:
-                if self.lvl.maze_map[self.case_y][self.case_x - 1] not in WALLS_MAP_NAME:
+                if self.lvl.maze_map[self.case_y][self.case_x - 1] \
+                   not in WALLS_MAP_NAME:
                     self.case_x -= 1
                     self.x = self.case_x * SPRITE_SIZE
                     self.collect_item()
 
         if direction == "up":
             if self.case_y > 0:
-                if self.lvl.maze_map[self.case_y - 1][self.case_x] not in WALLS_MAP_NAME:
+                if self.lvl.maze_map[self.case_y - 1][self.case_x] \
+                   not in WALLS_MAP_NAME:
                     self.case_y -= 1
                     self.y = self.case_y * SPRITE_SIZE
                     self.collect_item()
 
         if direction == "down":
             if self.case_y < (NB_SPRITES - 1):
-                if self.lvl.maze_map[self.case_y + 1][self.case_x] not in WALLS_MAP_NAME:
+                if self.lvl.maze_map[self.case_y + 1][self.case_x] \
+                   not in WALLS_MAP_NAME:
                     self.case_y += 1
                     self.y = self.case_y * SPRITE_SIZE
                     self.collect_item()
@@ -311,42 +354,3 @@ class Images:
             print("Image {} could not be opened. \
                Here is the original message: {}".format(filename, fnferr))
             exit()
-
-
-# ===============================================
-#           Drawing elements on screen
-# ===============================================
-def draw_sprites(lvl, mcgyver, guardian, images, window):
-    """
-    This function is used to display every sprites on screen.
-    """
-    for line_idx, line in enumerate(lvl.maze_map):
-        for sprite_idx, sprite in enumerate(line):
-            # Used to set sprites' coords
-            # compared to the fixed SPRITE_SIZE
-            x = sprite_idx * SPRITE_SIZE
-            y = line_idx * SPRITE_SIZE
-
-            # Displays wall if sprite in maze_map
-            # is in the WALLS_MAP_NAME constant(s)
-            if sprite in WALLS_MAP_NAME:
-                window.blit(images.wall_img, (x, y))
-
-            # set the floor sprite where there is no wall
-            if sprite not in WALLS_MAP_NAME:
-                window.blit(images.floor_img, (x, y))
-
-    # blit guardian and mcgyver (in this order)
-    window.blit(images.guardian_img, guardian.position(lvl))
-    window.blit(images.mcgyver_img, mcgyver.position(lvl))
-
-    """
-    For every item in the lvl's items,
-    display each item if its attribute "show" is True.
-    The item's image is seeked in the "images" Image class' instance.
-    The item's position is seeked in this item
-    Item class' instance @property "case_position"
-    """
-    for item in lvl.items:
-        if lvl.items[item].show:
-            window.blit(images.items[item], lvl.items[item].case_position)

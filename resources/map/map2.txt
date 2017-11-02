@@ -1,15 +1,15 @@
-  +-+-+-+-+-+-+
-|     |       |
-+ +-+ + +-+-+ +
-| |   |   | | |
-+ + +-+-+ + + +
-| |     |   | |
-+ +-+-+ +-+ + +
-| |   | |   | |
-+ + + + + +-+ +
-| | | | |   | |
-+ +-+ + +-+ + +
-| |   |   | | |
-+ + + +-+-+-+ +
-|   |         |
-+-+-+-+-+-+-+-+
+dffmmmmmmmmmmmm
+mfffmmmmmmmmmmm
+mffmmmmmmmmmmmm
+mfffffmmffffmfm
+mfmmmfffffffmfm
+mfffmmffmfffmfm
+mfmfmmfmmmmmmfm
+mfffffffffffffm
+mfmmmmmmmmmfffm
+mfffmmfffffffmm
+mffmmmmmmmfmffm
+mffffmfffffmffm
+mfffffffmffmffm
+mffffmmmffffffm
+mmmmmmmmmmmmmmm

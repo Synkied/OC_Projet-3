@@ -60,7 +60,9 @@ def launch_game():
         while in_menu:
             for event in pygame.event.get():
                 # quiting the game
-                if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE:
+                if (event.type == QUIT or
+                        event.type == KEYDOWN and
+                        event.key == K_ESCAPE):
                     continue_game, in_game, in_menu = False, False, False
 
                 # launching the game
@@ -92,9 +94,10 @@ def launch_game():
             for event in pygame.event.get():
 
                 # quiting the game
-                if event.type == QUIT or event.type == KEYDOWN and event.key == K_ESCAPE:
+                if (event.type == QUIT or
+                        event.type == KEYDOWN and
+                        event.key == K_ESCAPE):
                     continue_game, in_game, in_menu = False, False, False
-                    # in_game = False
 
                 # listening for KEYDOWN events every frames
                 if event.type == KEYDOWN:
@@ -107,7 +110,7 @@ def launch_game():
                     if event.key == K_DOWN:
                         mcgyver.move("down")
 
-            draw_sprites(mcgy_maze, mcgyver, guardian, images, window)
+            mcgy_maze.draw_sprites(mcgyver, guardian, images, window)
 
             # display the inventory when tab key is pressed
             if key_pressed[K_TAB]:
