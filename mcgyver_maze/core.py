@@ -255,19 +255,19 @@ class Character(GamePersona):
             # prints to the screen "YOU WIN"
             win_txt = myfont.render("YOU WIN!", 1, (0, 255, 0))
             window.blit(win_txt, (0.25 * WINDOW_SIDE, 0.45 * WINDOW_SIDE))
-            pygame.display.flip()
-            pygame.time.delay(1500)
-            return False, True
+            pygame.display.flip()  # refreshes the screen to display msg
+            pygame.time.delay(1500)  # wait 1.5s while displaying msg
+            return False, True  # set in_game to False and in_menu to True
 
         elif sorted(self.inventory._items) != sorted(ITEMS_SPRITES):
             # prints to the screen "YOU LOSE"
             lose_txt = myfont.render("YOU LOSE!", 1, (255, 0, 0))
             window.blit(lose_txt, (0.25 * WINDOW_SIDE, 0.45 * WINDOW_SIDE))
-            pygame.display.flip()
-            pygame.time.delay(1500)
-            return False, True
+            pygame.display.flip()  # refreshes the screen to display msg
+            pygame.time.delay(1500)  # wait 1.5s while displaying msg
+            return False, True  # set in_game to False and in_menu to True
 
-        return True, True
+        return True, False
 
     def display_inventory(self, images, window):
         # creates new pygame Surface, with specified parameters

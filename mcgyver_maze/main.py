@@ -34,21 +34,18 @@ pygame.display.set_icon(icon)
 # window title setting
 pygame.display.set_caption(WINDOW_TITLE)
 
+# menu and controls img
+menu_bckgrd = pygame.image.load(MENU_IMG).convert()
+controls_bckgrd = pygame.image.load(CONTROLS_IMG).convert()
+
 
 # ===========================
 #    Initialize the game
 # ===========================
 def launch_game():
+
     continue_game = True
     while continue_game:
-        # set the background img
-        menu_bckgrd = pygame.image.load(MENU_IMG).convert()
-
-        # display the background img
-        window.blit(menu_bckgrd, (0, 0))
-
-        # update the window to display contents
-        pygame.display.flip()
 
         # set loops to True
         in_menu = True
@@ -58,6 +55,8 @@ def launch_game():
         #       In menu actions
         # ===========================
         while in_menu:
+            # display the menu img
+            window.blit(menu_bckgrd, (0, 0))
             for event in pygame.event.get():
                 # quiting the game
                 if (event.type == QUIT or
@@ -70,6 +69,19 @@ def launch_game():
                     if event.key == K_KP_ENTER or event.key == K_RETURN:
                         in_menu = False
 
+            # listen for key_pressing event
+            key_pressed = pygame.key.get_pressed()
+
+            # if space is pressed, display controls img
+            if key_pressed[K_SPACE]:
+                window.blit(controls_bckgrd, (0, 0))
+
+            # refresh screen
+            pygame.display.flip()
+
+        # ===========================
+        #       Instanciations
+        # ===========================
         # instanciating the map and random items positions
         mcgy_maze = Level(MAP, ITEMS_SPRITES)
 
