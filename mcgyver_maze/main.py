@@ -6,37 +6,17 @@ The game is all about McGyver struggling to find 3 items,
 in order to put a guard to sleep and escape the maze.
 
 Python scripts used:
-mcgyver_maze.py
-constants.py
-classes.py
+main.py
+game_settings.py
+core.py
+views.py
 """
 
 import pygame
 from pygame.locals import *
 from game_settings import *
 from core import *
-
-# ===========================
-#      Initialize pygame
-# ===========================
-# initialize pygame and fonts
-pygame.init()
-pygame.font.init()
-myfont = pygame.font.Font(None, 60)
-
-# set window size
-window = pygame.display.set_mode((WINDOW_SIDE, WINDOW_SIDE))
-
-# icon settings
-icon = pygame.image.load(ICON_IMG).convert_alpha()
-pygame.display.set_icon(icon)
-
-# window title setting
-pygame.display.set_caption(WINDOW_TITLE)
-
-# menu and controls img
-menu_bckgrd = pygame.image.load(MENU_IMG).convert()
-controls_bckgrd = pygame.image.load(CONTROLS_IMG).convert()
+import views
 
 
 # ===========================
@@ -44,12 +24,33 @@ controls_bckgrd = pygame.image.load(CONTROLS_IMG).convert()
 # ===========================
 def launch_game():
 
+    # ===========================
+    #      Initialize pygame
+    # ===========================
+    # initialize pygame and fonts
+    pygame.init()
+    pygame.font.init()
+
+    # set window size
+    window = pygame.display.set_mode((WINDOW_SIDE, WINDOW_SIDE))
+
+    # icon settings
+    icon = pygame.image.load(ICON_IMG).convert_alpha()
+    pygame.display.set_icon(icon)
+
+    # window title setting
+    pygame.display.set_caption(WINDOW_TITLE)
+
+    # menu and controls img
+    menu_bckgrd = pygame.image.load(MENU_IMG).convert()
+    controls_bckgrd = pygame.image.load(CONTROLS_IMG).convert()
+
     continue_game = True
+
     while continue_game:
 
-        # set loops to True
+        # set loop to True
         in_menu = True
-        in_game = True
 
         # ===========================
         #       In menu actions
@@ -68,6 +69,7 @@ def launch_game():
                 elif event.type == KEYDOWN:
                     if event.key == K_KP_ENTER or event.key == K_RETURN:
                         in_menu = False
+                        in_game = True
 
             # listen for key_pressing event
             key_pressed = pygame.key.get_pressed()
@@ -99,6 +101,9 @@ def launch_game():
             # change the window's title while in game
             pygame.display.set_caption(WINDOW_TITLE_IN_GAME)
 
+            # display everything on screen
+            views.draw_sprites(mcgy_maze, mcgyver, guardian, images, window)
+
             # get currently pressed keys
             key_pressed = pygame.key.get_pressed()
 
@@ -122,15 +127,13 @@ def launch_game():
                     if event.key == K_DOWN:
                         mcgyver.move("down")
 
-            mcgy_maze.draw_sprites(mcgyver, guardian, images, window)
-
             # display the inventory when tab key is pressed
             if key_pressed[K_TAB]:
-                mcgyver.display_inventory(images, window)
+                views.display_inventory(mcgyver, images, window)
 
             # If mcgyver position is equal to the guardian position,
             # change in_game and in_menu bools and display a message
-            if mcgyver.position(mcgy_maze) == guardian.position(mcgy_maze):
+            if mcgyver.case_position(mcgy_maze) == guardian.case_position(mcgy_maze):
                 in_game, in_menu = mcgyver.check_inventory(window)
 
             # refreshing the window

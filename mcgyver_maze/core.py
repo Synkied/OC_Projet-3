@@ -14,7 +14,7 @@ class Level:
     def __init__(self, lvl_file, required_items):
         self.lvl_file = lvl_file
         self.items = {}
-        self.generate()
+        self.generate_from_file()
 
         """
         For each item key in required_items,
@@ -30,7 +30,7 @@ class Level:
         to display the lvl in the display_lvl method.
         """
 
-    def generate(self):
+    def generate_from_file(self):
         with open(self.lvl_file, "r") as lvl_file:
             """
             Nested list comprehension to build a 2D array,
@@ -43,54 +43,18 @@ class Level:
 
     def random_pos(self):
         """
-        While self.maze_map[case_y][case_x] is not on a free space,
+        While self.maze_map[pos_y][pos_x] is not on a free space,
         search for a random position.
         Then set this random position to the ITEMS_MAP_NAME.
         This is to avoid items superposition.
         """
-        case_x = 0
-        case_y = 0
-        while self.maze_map[case_y][case_x] != FLOOR_MAP_NAME:
-            case_x = randint(1, (NB_SPRITES - 1))
-            case_y = randint(1, (NB_SPRITES - 1))
-        self.maze_map[case_y][case_x] = ITEMS_MAP_NAME
-        return case_x, case_y
-
-    def draw_sprites(self, mcgyver, guardian, images, window):
-        """
-        This function is used to display every sprites on screen.
-        """
-        for line_idx, line in enumerate(self.maze_map):
-            for sprite_idx, sprite in enumerate(line):
-                # Used to set sprites' coords
-                # compared to the fixed SPRITE_SIZE
-                x = sprite_idx * SPRITE_SIZE
-                y = line_idx * SPRITE_SIZE
-
-                # Displays wall if sprite in maze_map
-                # is in the WALLS_MAP_NAME constant(s)
-                if sprite in WALLS_MAP_NAME:
-                    window.blit(images.wall_img, (x, y))
-
-                # set the floor sprite where there is no wall
-                if sprite not in WALLS_MAP_NAME:
-                    window.blit(images.floor_img, (x, y))
-
-        # blit guardian and mcgyver (in this order)
-        window.blit(images.guardian_img, guardian.position(self))
-        window.blit(images.mcgyver_img, mcgyver.position(self))
-
-        """
-        To put in the game loop.
-        For every item in the lvl's items,
-        display each item if its attribute "show" is True.
-        The item's image is seeked in the "images" Image class' instance.
-        The item's position is seeked in this item
-        Item class' instance @property "case_position"
-        """
-        for item in self.items:
-            if self.items[item].show:
-                window.blit(images.items[item], self.items[item].case_position)
+        pos_x = 0
+        pos_y = 0
+        while self.maze_map[pos_y][pos_x] != FLOOR_MAP_NAME:
+            pos_x = randint(1, (NB_SPRITES - 1))
+            pos_y = randint(1, (NB_SPRITES - 1))
+        self.maze_map[pos_y][pos_x] = ITEMS_MAP_NAME
+        return pos_x, pos_y
 
 
 # ===========================
@@ -100,10 +64,10 @@ class Item:
     """Describes an item"""
 
     def __init__(self, position):
-        self.case_x = position[0]
-        self.case_y = position[1]
+        self.pos_x = position[0]
+        self.pos_y = position[1]
         # turn to false when char position == item position
-        self.show = True
+        self.displaying = True
 
     @property
     def case_position(self):
@@ -113,7 +77,10 @@ class Item:
         The case position is equal to the position of
         the item on the map's file times the SPRITE_SIZE.
         """
-        return [self.case_x * SPRITE_SIZE, self.case_y * SPRITE_SIZE]
+        self.case_x = self.pos_x * SPRITE_SIZE
+        self.case_y = self.pos_y * SPRITE_SIZE
+
+        return (self.case_x, self.case_y)
 
 
 # ============================
@@ -125,16 +92,16 @@ class GamePersona():
     """
 
     def __init__(self):
-        self.case_x = 0
-        self.case_y = 0
-        self.x = self.case_x * SPRITE_SIZE
-        self.y = self.case_y * SPRITE_SIZE
+        self.pos_x = 0
+        self.pos_y = 0
+        self.case_x = self.pos_x * SPRITE_SIZE
+        self.case_y = self.pos_y * SPRITE_SIZE
 
-    def position(self, lvl):
+    def case_position(self, lvl):
         """
         Returns the position of the persona
         """
-        return (self.x, self.y)
+        return (self.case_x, self.case_y)
 
 
 # ===========================
@@ -148,21 +115,20 @@ class NPC(GamePersona):
     def __init__(self, lvl, name):
         self.name = name
         super().__init__()
-        self.case_x, self.case_y = self.random_npc_position(lvl)
+        self.pos_x, self.pos_y = self.random_npc_position(lvl)
 
     def random_npc_position(self, lvl):
         """
         Returns a random position for each instance of NPC
         """
-        while lvl.maze_map[self.case_y][self.case_x] != NPCS[self.name][0]:
-            self.case_x = randint(10, (NB_SPRITES - 1))
-            self.case_y = randint(10, (NB_SPRITES - 1))
-            if lvl.maze_map[self.case_y][self.case_x] in FLOOR_MAP_NAME:
-                self.x = self.case_x * SPRITE_SIZE
-                self.y = self.case_y * SPRITE_SIZE
-                # set the case name as NPCS' initial
-                lvl.maze_map[self.case_y][self.case_x] = NPCS[self.name][0]
-        return self.x, self.y
+        while lvl.maze_map[self.pos_y][self.pos_x] != FLOOR_MAP_NAME:
+            self.pos_x = randint(10, (NB_SPRITES - 1))
+            self.pos_y = randint(10, (NB_SPRITES - 1))
+        self.case_x = self.pos_x * SPRITE_SIZE
+        self.case_y = self.pos_y * SPRITE_SIZE
+        # set the case name as NPCS' initial
+        lvl.maze_map[self.pos_y][self.pos_x] = NPCS[self.name][0]
+        return self.case_x, self.case_y
 
 
 # ===========================
@@ -190,38 +156,38 @@ class Character(GamePersona):
             # because there are 15 sprites,
             # but we start counting from 0
             # so it's 0 to 14 (15 sprites)
-            if self.case_x < (NB_SPRITES - 1):
+            if self.pos_x < (NB_SPRITES - 1):
                 # check if the case is not a wall
-                if self.lvl.maze_map[self.case_y][self.case_x + 1] \
+                if self.lvl.maze_map[self.pos_y][self.pos_x + 1] \
                    not in WALLS_MAP_NAME:
                     # if it is not, go by one case
-                    self.case_x += 1
+                    self.pos_x += 1
                     # move the hero sprite on the case
-                    self.x = self.case_x * SPRITE_SIZE
+                    self.case_x = self.pos_x * SPRITE_SIZE
                     self.collect_item()
 
         if direction == "left":
-            if self.case_x > 0:
-                if self.lvl.maze_map[self.case_y][self.case_x - 1] \
+            if self.pos_x > 0:
+                if self.lvl.maze_map[self.pos_y][self.pos_x - 1] \
                    not in WALLS_MAP_NAME:
-                    self.case_x -= 1
-                    self.x = self.case_x * SPRITE_SIZE
+                    self.pos_x -= 1
+                    self.case_x = self.pos_x * SPRITE_SIZE
                     self.collect_item()
 
         if direction == "up":
-            if self.case_y > 0:
-                if self.lvl.maze_map[self.case_y - 1][self.case_x] \
+            if self.pos_y > 0:
+                if self.lvl.maze_map[self.pos_y - 1][self.pos_x] \
                    not in WALLS_MAP_NAME:
-                    self.case_y -= 1
-                    self.y = self.case_y * SPRITE_SIZE
+                    self.pos_y -= 1
+                    self.case_y = self.pos_y * SPRITE_SIZE
                     self.collect_item()
 
         if direction == "down":
-            if self.case_y < (NB_SPRITES - 1):
-                if self.lvl.maze_map[self.case_y + 1][self.case_x] \
+            if self.pos_y < (NB_SPRITES - 1):
+                if self.lvl.maze_map[self.pos_y + 1][self.pos_x] \
                    not in WALLS_MAP_NAME:
-                    self.case_y += 1
-                    self.y = self.case_y * SPRITE_SIZE
+                    self.pos_y += 1
+                    self.case_y = self.pos_y * SPRITE_SIZE
                     self.collect_item()
 
     def collect_item(self):
@@ -232,16 +198,16 @@ class Character(GamePersona):
         for item in self.lvl.items:
             """
             For each item in the lvl's items,
-            if item's case_x and case_y
-            are equal to the char case_x and case_y,
-            set the item's attribute "show" to False, to hide it
+            if item's pos_x and pos_y
+            are equal to the char pos_x and pos_y,
+            set the item's attribute "displaying" to False, to hide it
             """
-            if (self.lvl.items[item].case_x == self.case_x and
-                    self.lvl.items[item].case_y == self.case_y and
-                    self.lvl.items[item].show):
+            if (self.lvl.items[item].pos_x == self.pos_x and
+                    self.lvl.items[item].pos_y == self.pos_y and
+                    self.lvl.items[item].displaying):
 
                 self.inventory.add_object(item)
-                self.lvl.items[item].show = False
+                self.lvl.items[item].displaying = False
                 print(item.capitalize(), "collected")
                 print("Inventory:", self.inventory._items)
 
@@ -269,35 +235,6 @@ class Character(GamePersona):
             return False, True  # set in_game to False and in_menu to True
 
         return True, False
-
-    def display_inventory(self, images, window):
-        # creates new pygame Surface, with specified parameters
-        inv = pygame.Surface((INV_WIDTH, INV_HEIGHT))
-        # transparent surface
-        inv.set_alpha(200)
-        # black surface
-        inv.fill((0, 0, 0))
-
-        # defines inventory position on the screen
-        # times 0.5 displays it in the middle of the window
-        inv_x = (0.5 * WINDOW_SIDE) - (0.5 * INV_WIDTH)
-        inv_y = (0.5 * WINDOW_SIDE) - (0.5 * INV_HEIGHT)
-
-        # blit items in the inventory.
-        # Inventory space is equal to INV_ROW_SPACE
-        window.blit(inv, (inv_x, inv_y))
-        for idx, item in enumerate(self.inventory._items):
-            if idx < INV_ROW_SPACE:
-                window.blit(images.items[item], (
-                    (idx + INV_ROW_SPACE * 2) * SPRITE_SIZE, 7 * SPRITE_SIZE)
-                    # x's and y's coordinates of the blit
-                )
-
-            else:
-                raise TooMuchItems("""Too many items to display.
-                Number of items should be less or equal to: {}""".format(
-                    INV_ROW_SPACE * INV_COL_SPACE)
-                )
 
 
 # ===========================
@@ -359,15 +296,3 @@ class Images:
             print("Image {} could not be opened. \
                Here is the original message: {}".format(filename, fnferr))
             exit()
-
-
-# ===========================
-#     Exceptions classes
-# ===========================
-class TooMuchItems(Exception):
-
-    def __init__(self, reason):
-        self.reason = reason
-
-    def __str__(self):
-        return self.reason

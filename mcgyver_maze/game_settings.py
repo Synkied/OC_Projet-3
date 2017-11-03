@@ -1,8 +1,3 @@
-import os
-
-ROOT_PATH = os.path.dirname(os.path.abspath(__file__))
-PARENT_ROOT_PATH = os.path.abspath(os.path.join(ROOT_PATH, os.pardir))
-
 """ Window constants"""
 SPRITE_SIZE = 30
 NB_SPRITES = 15
