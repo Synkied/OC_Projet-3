@@ -64,8 +64,7 @@ class Item:
     """Describes an item"""
 
     def __init__(self, position):
-        self.pos_x = position[0]
-        self.pos_y = position[1]
+        self.pos_x, self.pos_y = position
         # turn to false when char position == item position
         self.displaying = True
 
@@ -88,7 +87,7 @@ class Item:
 # ============================
 class GamePersona():
     """
-    Base class for all objects (chars, items...) in the game
+    Base class for all personas (Chars, NPC...) in the game
     """
 
     def __init__(self):

@@ -45,4 +45,4 @@ NPCS = {
 MAP = "../resources/map/map1.txt"
 WALLS_MAP_NAME = "m"
 FLOOR_MAP_NAME = "f"
-ITEMS_MAP_NAME = "item"
+ITEMS_MAP_NAME = "*"
