@@ -64,7 +64,8 @@ def display_inventory(char, images, window):
     for idx, item in enumerate(char.inventory._items):
         if idx < INV_ROW_SPACE:
             window.blit(images.items[item], (
-                (idx + (NB_SPRITES - INV_ROW_SPACE) // 2) * SPRITE_SIZE, 7 * SPRITE_SIZE)
+                (idx + (NB_SPRITES - INV_ROW_SPACE) // 2) *
+                SPRITE_SIZE, 7 * SPRITE_SIZE)
                 # x's and y's coordinates of the blit
                 # e.g.: x = 0 + (15 - 3) // 2 * 30 = 6 * 30 = 180
             )

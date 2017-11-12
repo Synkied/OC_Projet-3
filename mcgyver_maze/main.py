@@ -133,7 +133,8 @@ def launch_game():
 
             # If mcgyver position is equal to the guardian position,
             # change in_game and in_menu bools and display a message
-            if mcgyver.case_position(mcgy_maze) == guardian.case_position(mcgy_maze):
+            if (mcgyver.case_position(mcgy_maze) ==
+                    guardian.case_position(mcgy_maze)):
                 in_game, in_menu = mcgyver.check_inventory(window)
 
             # refreshing the window
